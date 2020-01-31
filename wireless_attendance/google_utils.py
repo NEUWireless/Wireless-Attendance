@@ -55,6 +55,7 @@ class WirelessAttendanceSpreadsheet():
     def write_access_log(self, uuid: str, time: datetime):
         if uuid not in self.known_uuids:
             self.write_new_user(uuid, f"Member #{len(self.known_uuids) + 1}")
+            self.known_uuids.add(uuid)
 
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['access_log']['name'])
         worksheet_handle.insert_row([uuid, time.isoformat()], 2)
