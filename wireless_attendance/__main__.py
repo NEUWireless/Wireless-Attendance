@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def make_parser() -> argparse.ArgumentParser:
+    """Construct the argument parser for this script."""
     parser = argparse.ArgumentParser(
         description='Wireless Attendance Tracking'
     )
@@ -37,6 +38,10 @@ def make_parser() -> argparse.ArgumentParser:
 
 
 def open_spreadsheet_from_args(google_client: gspread.Client, args):
+    """
+    Attempt to open the Google Sheets spreadsheet specified by the given
+    command line arguments.
+    """
     if args.spreadsheet_id:
         logger.info(f"Opening spreadsheet by ID '{args.spreadsheet_id}'")
         return google_client.open_by_key(args.spreadsheet_id)
@@ -51,6 +56,7 @@ def open_spreadsheet_from_args(google_client: gspread.Client, args):
 
 
 def run_attendance_tacking(card_reader: nfc.BaseHuskyCardReader, card_callback):
+    """Run the read-card write-id procedure indefinitely."""
     delay = settings.CARD_READER_DELAY
     while True:
         card_callback(card_reader.read_card())
