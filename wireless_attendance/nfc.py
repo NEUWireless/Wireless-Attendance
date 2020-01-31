@@ -10,6 +10,7 @@ from wireless_attendance import settings
 
 logger = logging.getLogger(__name__)
 
+
 class BaseHuskyCardReader:
 
     def read_card(self) -> Optional[str]:
@@ -53,6 +54,7 @@ class HuskyCardReader(BaseHuskyCardReader):
         self.card_timeouts[uid] = current_time
         return uid
 
+
 class MockHuskyCardReader(BaseHuskyCardReader):
 
     def read_card(self) -> Optional[str]:
@@ -60,7 +62,6 @@ class MockHuskyCardReader(BaseHuskyCardReader):
         if card_uuid:
             return card_uuid
         return None
-
 
 
 def format_binary(byte_array: bytearray):

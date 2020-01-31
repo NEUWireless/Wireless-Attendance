@@ -1,5 +1,5 @@
 import argparse
-import logging
+import logging.config
 import sys
 import time
 from datetime import datetime
@@ -7,6 +7,8 @@ from datetime import datetime
 import gspread
 
 from . import google_utils, nfc, settings
+
+logging.config.dictConfig(settings.LOGGING)
 
 logger = logging.getLogger(__name__)
 
