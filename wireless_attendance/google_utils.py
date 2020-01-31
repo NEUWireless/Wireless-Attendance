@@ -22,7 +22,7 @@ Client instance used to interface with the Google Sheets API.
 logger = logging.getLogger(__name__)
 
 
-def get_google_client():
+def get_google_client(credentials_file):
     """
     Return this module's Google API client, creating a connection is one
     does not already exist.
@@ -31,7 +31,7 @@ def get_google_client():
     if not _client:
         # Connecting to google's API
         logger.debug("Connecting to Google API...")
-        creds = SACreds.from_json_keyfile_name(settings.GOOGLE_CREDENTIALS_FILE, GOOGLE_ACCESS_SCOPES)
+        creds = SACreds.from_json_keyfile_name(credentials_file, GOOGLE_ACCESS_SCOPES)
         _client = gspread.authorize(creds)
 
     return _client

@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
-import board
 import busio
 from adafruit_pn532.spi import PN532_SPI
 from digitalio import DigitalInOut
@@ -13,6 +12,10 @@ logger = logging.getLogger(__name__)
 class HuskyCardReader:
 
     def __init__(self, timeout: timedelta):
+        # Delay loading board module until a reader object is constructed
+        # to allow testing on non-supported devies
+        import board
+
         spi = busio.SPI(board.SCLK, board.MOSI, board.MISO)
         cs_pin = DigitalInOut(board.D5)
         self.pn532 = PN532_SPI(spi, cs_pin, debug=True)
