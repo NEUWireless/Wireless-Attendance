@@ -1,3 +1,7 @@
+"""
+Utilities for reading card IDs over NFC.
+"""
+
 import logging
 from datetime import datetime, timedelta
 from typing import Optional
@@ -12,12 +16,19 @@ logger = logging.getLogger(__name__)
 
 
 class BaseHuskyCardReader:
+    """
+    Base class for nfc card readers. Extend this if you want to mock a card
+    reader for e.g. testing purposes.
+    """
 
     def read_card(self) -> Optional[str]:
         raise NotImplemented
 
 
 class HuskyCardReader(BaseHuskyCardReader):
+    """
+    Card ready that reads card IDs via NFC using the AdaFruit PN532 library.
+    """
 
     def __init__(self, timeout: timedelta):
         # Delay loading board module until a reader object is constructed
@@ -35,6 +46,13 @@ class HuskyCardReader(BaseHuskyCardReader):
         self.card_timeouts = {}
 
     def read_card(self) -> Optional[str]:
+        """
+        Attempt to read a card ID.
+
+        If no card is found, or if the card found was recently scanned, return
+        `None`. Otherwise, return the card's ID, formatted into a readable
+        string.
+        """
         uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT)
         if uid:
             uid = format_binary(uid)
@@ -57,8 +75,14 @@ class HuskyCardReader(BaseHuskyCardReader):
 
 
 class MockHuskyCardReader(BaseHuskyCardReader):
+    """
+    Mock card ready to testing the Google API connection.
+    """
 
     def read_card(self) -> Optional[str]:
+        """
+        Prompts and reads mock card IDs from stdin.
+        """
         card_uuid = input("Card ID: ")
         if card_uuid:
             return card_uuid
@@ -66,4 +90,7 @@ class MockHuskyCardReader(BaseHuskyCardReader):
 
 
 def format_binary(byte_array: bytearray):
+    """
+    Formats the given byte array into a readable binary string.
+    """
     return ''.join('{:08b}_'.format(i) for i in byte_array)

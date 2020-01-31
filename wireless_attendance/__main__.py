@@ -14,22 +14,43 @@ logger = logging.getLogger(__name__)
 
 
 def make_parser() -> argparse.ArgumentParser:
+    """Construct the argument parser for this script."""
     parser = argparse.ArgumentParser(
-        description='Wireless Attendance Tracking'
+        description="Wireless Attendance Tracking",
+        prog='wireless_attendance',
     )
 
-    parser.add_argument('--credentials-file', type=str,
-        help="""The path to the Google Service Account credentials
+    parser.add_argument(
+        '--credentials-file',
+        type=str,
+        help="""The path to the Google Service Account credentials.
         See the gspread documentation for information on how to obtain a credentials file: https://gspread.readthedocs.io/en/latest/oauth2.html
         """,
         default=settings.DEFAULT_GOOGLE_CREDENTIALS_FILE,
     )
 
     spreadsheet_id_group = parser.add_mutually_exclusive_group(required=True)
-    spreadsheet_id_group.add_argument('--spreadsheet-id', type=str)
-    spreadsheet_id_group.add_argument('--spreadsheet-name', type=str)
-    spreadsheet_id_group.add_argument('--spreadsheet-url', type=str)
-    spreadsheet_id_group.add_argument('-no-sheet', action='store_true')
+    spreadsheet_id_group.add_argument(
+        '--spreadsheet-id',
+        type=str,
+        help="The ID of the spreadsheet to store attendance data."
+    )
+    spreadsheet_id_group.add_argument(
+        '--spreadsheet-name',
+        type=str,
+        help="The name of the spreadsheet to store attendance data.",
+    )
+    spreadsheet_id_group.add_argument(
+        '--spreadsheet-url',
+        type=str,
+        help="The complete URL to the spreadsheet to store attendance data.",
+    )
+    spreadsheet_id_group.add_argument(
+        '-no-sheet',
+        action='store_true',
+        help="If specified, the process will not attempt to connect to the "
+             "Google Sheets API. All card reads will still be written the the logger."
+    )
 
     parser.add_argument('-mock-reader', action='store_true')
 
@@ -37,6 +58,10 @@ def make_parser() -> argparse.ArgumentParser:
 
 
 def open_spreadsheet_from_args(google_client: gspread.Client, args):
+    """
+    Attempt to open the Google Sheets spreadsheet specified by the given
+    command line arguments.
+    """
     if args.spreadsheet_id:
         logger.info(f"Opening spreadsheet by ID '{args.spreadsheet_id}'")
         return google_client.open_by_key(args.spreadsheet_id)
@@ -51,6 +76,7 @@ def open_spreadsheet_from_args(google_client: gspread.Client, args):
 
 
 def run_attendance_tacking(card_reader: nfc.BaseHuskyCardReader, card_callback):
+    """Run the read-card write-id procedure indefinitely."""
     delay = settings.CARD_READER_DELAY
     while True:
         card_callback(card_reader.read_card())
