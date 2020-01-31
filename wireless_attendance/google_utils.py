@@ -1,3 +1,7 @@
+"""
+Utilities for interfacing with the Google Sheet's API.
+"""
+
 import logging
 from datetime import datetime
 from typing import Set
@@ -37,7 +41,11 @@ def get_google_client(credentials_file):
     return _client
 
 
-class WirelessAttendanceSpreadsheet():
+class WirelessAttendanceSpreadsheet:
+    """
+    A Google Sheets spreadsheet that is being used to store club attendance
+    data.
+    """
 
     def __init__(self, spreadsheet: gspread.Spreadsheet):
         self.spreadsheet = spreadsheet
@@ -45,17 +53,31 @@ class WirelessAttendanceSpreadsheet():
         self.known_uuids = self.fetch_known_uuids()
 
     def fetch_known_uuids(self) -> Set[str]:
+        """
+        Retrieves all known card UUIDs from the Google Sheets API.
+        """
         logger.info("Fetching all known card UUIDs from the Google Sheet")
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
         # Ignore the first column value, which corresponds to the table header
         return set(worksheet_handle.col_values(1)[1:])
 
     def write_new_user(self, uuid: str, name: str):
+        """
+        Add the given ``uuid`` to the user-to-name registry worksheet,
+        initializing the name field with the given ``name``.
+        """
         logger.info(f"Registering new UUID for card {uuid} associated with name {name}")
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
         worksheet_handle.insert_row([uuid, name], 2)
 
     def write_access_log(self, uuid: str, time: datetime):
+        """
+        Write a row to the access log worksheet denoting that the given card
+        ``uuid`` was scanned at the given ``time``.
+
+        If the ``uuid` has not been previously scanned, add it to the
+        user-to-name registry worksheet.
+        """
         if uuid not in self.known_uuids:
             self.write_new_user(uuid, f"Member #{len(self.known_uuids) + 1}")
             self.known_uuids.add(uuid)
