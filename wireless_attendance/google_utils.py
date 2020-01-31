@@ -46,7 +46,8 @@ class WirelessAttendanceSpreadsheet():
 
     def fetch_known_uuids(self) -> Set[str]:
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
-        return set(worksheet_handle.col_values(1))
+        # Ignore the first column value, which corresponds to the table header
+        return set(worksheet_handle.col_values(1)[1:])
 
     def write_new_user(self, uuid: str, name: str):
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
