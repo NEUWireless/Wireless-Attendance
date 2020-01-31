@@ -1,5 +1,5 @@
 import argparse
-import logging
+import logging.config
 import sys
 import time
 from datetime import datetime
@@ -7,6 +7,8 @@ from datetime import datetime
 import gspread
 
 from . import google_utils, nfc, settings
+
+logging.config.dictConfig(settings.LOGGING)
 
 logger = logging.getLogger(__name__)
 
@@ -57,14 +59,19 @@ def main(raw_args):
     args = parser.parse_args(raw_args)
 
     if args.mock_reader:
+        logging.debug("Using mock card reader")
         card_reader = nfc.MockHuskyCardReader()
     else:
+        logging.debug("Using NFC card reading. Attempting connection...")
         card_reader = nfc.HuskyCardReader(settings.CARD_READER_REPEAT_TIMEOUT)
 
     if args.no_sheet:
+        logging.debug("Running with Google Sheets API disabled")
+
         def card_callback(card_uuid):
             logger.info(f"Read card with ID: {card_uuid}")
     else:
+        logging.debug("Running with live Google Sheet. Attempting Google Sheets API connecting...")
         google_client = google_utils.get_google_client(args.credentials_file)
         try:
             spreadsheet = google_utils.WirelessAttendanceSpreadsheet(
@@ -75,6 +82,7 @@ def main(raw_args):
             raise
 
         def card_callback(card_uuid):
+            logging.debug(f"Writing access with card '{card_uuid}' to the Google Sheet")
             spreadsheet.write_access_log(card_uuid, datetime.now())
 
     run_attendance_tacking(card_reader, card_callback)

@@ -39,6 +39,12 @@ LOGGING = {
             'filename': LOGGING_FILE,
             'formatter': 'default',
         },
+        'default_stderr': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+            'stream': 'ext://sys.stderr',
+        },
     },
     'formatters': {
         'default': {
@@ -47,9 +53,9 @@ LOGGING = {
         }
     },
     'loggers': {
-        'wireless_attendace': {
+        '': { # root logger
             'level': 'DEBUG',
-            'handlers': ['default_file'],
+            'handlers': ['default_file', 'default_stderr'],
             'propagate': False,
         },
     },

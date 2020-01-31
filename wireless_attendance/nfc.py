@@ -10,6 +10,7 @@ from wireless_attendance import settings
 
 logger = logging.getLogger(__name__)
 
+
 class BaseHuskyCardReader:
 
     def read_card(self) -> Optional[str]:
@@ -28,7 +29,7 @@ class HuskyCardReader(BaseHuskyCardReader):
         self.pn532 = PN532_SPI(spi, cs_pin, debug=True)
 
         ic, ver, rev, support = self.pn532.get_firmware_version()
-        logger.debug('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
+        logger.info('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
 
         self.timeout = timeout
         self.card_timeouts = {}
@@ -37,13 +38,14 @@ class HuskyCardReader(BaseHuskyCardReader):
         uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT)
         if uid:
             uid = format_binary(uid)
-            logger.debug(f"Found card with UID: {uid}")
+            logger.info(f"Read card with UID: {uid}")
 
         current_time = datetime.now()
 
         try:
             last_read = self.card_timeouts[uid]
             if current_time - last_read < self.timeout:
+                logger.debug(f"Card {uid} was read recently! Ignoring most recent read")
                 return None
         except KeyError:
             # Card uuid has not been read before, so we can proceed with
@@ -53,6 +55,7 @@ class HuskyCardReader(BaseHuskyCardReader):
         self.card_timeouts[uid] = current_time
         return uid
 
+
 class MockHuskyCardReader(BaseHuskyCardReader):
 
     def read_card(self) -> Optional[str]:
@@ -60,7 +63,6 @@ class MockHuskyCardReader(BaseHuskyCardReader):
         if card_uuid:
             return card_uuid
         return None
-
 
 
 def format_binary(byte_array: bytearray):

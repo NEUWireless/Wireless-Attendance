@@ -30,7 +30,7 @@ def get_google_client(credentials_file):
     global _client
     if not _client:
         # Connecting to google's API
-        logger.debug("Connecting to Google API...")
+        logger.info(f"Connecting to Google API using credentials file {credentials_file}")
         creds = SACreds.from_json_keyfile_name(credentials_file, GOOGLE_ACCESS_SCOPES)
         _client = gspread.authorize(creds)
 
@@ -45,11 +45,13 @@ class WirelessAttendanceSpreadsheet():
         self.known_uuids = self.fetch_known_uuids()
 
     def fetch_known_uuids(self) -> Set[str]:
+        logger.info("Fetching all known card UUIDs from the Google Sheet")
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
         # Ignore the first column value, which corresponds to the table header
         return set(worksheet_handle.col_values(1)[1:])
 
     def write_new_user(self, uuid: str, name: str):
+        logger.info(f"Registering new UUID for card {uuid} associated with name {name}")
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
         worksheet_handle.insert_row([uuid, name], 2)
 
@@ -58,6 +60,7 @@ class WirelessAttendanceSpreadsheet():
             self.write_new_user(uuid, f"Member #{len(self.known_uuids) + 1}")
             self.known_uuids.add(uuid)
 
+        logger.debug(f"Write access with card {uuid} to sheet")
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['access_log']['name'])
         worksheet_handle.insert_row([uuid, time.isoformat()], 2)
 
@@ -76,18 +79,23 @@ class WirelessAttendanceSpreadsheet():
                 worksheet_handle = self.spreadsheet.worksheet(worksheet['name'])
             except gspread.WorksheetNotFound:
                 logger.info(f"Worksheet '{worksheet['name']}' does not exist. Creating new worksheet.")
-                worksheet_handle = self.spreadsheet.add_worksheet(worksheet['name'], rows=1,
-                    cols=len(worksheet['columns']))
+                worksheet_handle = self.spreadsheet.add_worksheet(
+                    worksheet['name'],
+                    rows=1,
+                    cols=len(worksheet['columns'])
+                )
 
             # Fetch the column headers from the remote worksheet.
             worksheet_headers = worksheet_handle.row_values(1)
 
             if worksheet_headers[:len(worksheet['columns'])] != worksheet['columns']:
                 logger.warning(
-                    "Preexisting table found, with improper formatting: Fixing\n"
-                    "Expected headers: {}\n"
-                    "Found headers {}\n".format(worksheet['columns'], worksheet_headers)
+                    f"Preexisting table found for {worksheet['name']} with improper formatting: Fixing\n"
+                    f"  Expected headers: {worksheet['columns']}\n"
+                    f"  Found headers: {worksheet_headers}"
                 )
                 # TODO: move all data, not just headers
                 worksheet_handle.insert_row(worksheet['columns'], 1)
                 worksheet_handle.delete_row(2)
+            else:
+                logger.debug(f"Worksheet {worksheet['name']} is formatted correctly")
