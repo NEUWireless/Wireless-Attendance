@@ -38,10 +38,13 @@ def make_parser() -> argparse.ArgumentParser:
 
 def open_spreadsheet_from_args(google_client: gspread.Client, args):
     if args.spreadsheet_id:
+        logger.info(f"Opening spreadsheet by ID '{args.spreadsheet_id}'")
         return google_client.open_by_key(args.spreadsheet_id)
     elif args.spreadsheet_url:
+        logger.info(f"Opening spreadsheet by URL '{args.spreadsheet_url}'")
         return google_client.open_by_url(args.spreadsheet_url)
     elif args.spreadsheet_name:
+        logger.info(f"Opening spreadsheet by name '{args.spreadsheet_name}'")
         return google_client.open(args.spreadsheet_name)
     else:
         raise ValueError("Invalid command line arguments - no spreadsheet identifier was provided")
