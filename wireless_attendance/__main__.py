@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+import time
 from datetime import datetime
 
 import gspread
@@ -28,6 +29,8 @@ def make_parser() -> argparse.ArgumentParser:
     spreadsheet_id_group.add_argument('--spreadsheet-url', type=str)
     spreadsheet_id_group.add_argument('-no-sheet', action='store_true')
 
+    parser.add_argument('-mock-reader', action='store_true')
+
     return parser
 
 
@@ -42,30 +45,39 @@ def open_spreadsheet_from_args(google_client: gspread.Client, args):
         raise ValueError("Invalid command line arguments - no spreadsheet identifier was provided")
 
 
+def run_attendance_tacking(card_reader: nfc.BaseHuskyCardReader, card_callback):
+    delay = settings.CARD_READER_DELAY
+    while True:
+        card_callback(card_reader.read_card())
+        time.sleep(delay.microseconds / 1e6)
+
+
 def main(raw_args):
     parser = make_parser()
     args = parser.parse_args(raw_args)
 
-    # Example implementation - to be revised
-    if not args.no_sheet:
+    if args.mock_reader:
+        card_reader = nfc.MockHuskyCardReader()
+    else:
+        card_reader = nfc.HuskyCardReader(settings.CARD_READER_REPEAT_TIMEOUT)
+
+    if args.no_sheet:
+        def card_callback(card_uuid):
+            logger.info(f"Read card with ID: {card_uuid}")
+    else:
         google_client = google_utils.get_google_client(args.credentials_file)
         try:
             spreadsheet = google_utils.WirelessAttendanceSpreadsheet(
                 open_spreadsheet_from_args(google_client, args)
             )
         except gspread.SpreadsheetNotFound:
-            logger.exception(f"Failed to open spreadsheet {settings.GOOGLE_SPREADSHEET_NAME}: no such sheet exists")
+            logger.exception("Failed to open spreadsheet : no such sheet exists")
             raise
 
-        card_reader = nfc.HuskyCardReader(settings.CARD_READER_REPEAT_TIMEOUT)
-
-        while True:
-            card_uuid = card_reader.read_card(settings.CARD_READER_READ_TIMEOUT)
+        def card_callback(card_uuid):
             spreadsheet.write_access_log(card_uuid, datetime.now())
 
-    else:
-        # TODO
-        print("Running without sheet to be implemented")
+    run_attendance_tacking(card_reader, card_callback)
 
 
 main(sys.argv[1:])

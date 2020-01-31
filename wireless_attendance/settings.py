@@ -23,11 +23,11 @@ CARD_READER_REPEAT_TIMEOUT = timedelta(seconds=10)
 
 CARD_READER_READ_TIMEOUT = timedelta(seconds=1)
 
-GOOGLE_SPREADSHEET_NAME = "Wireless Attendance Tracking"
+CARD_READER_DELAY = timedelta(seconds=0.5)
 
 DEFAULT_GOOGLE_CREDENTIALS_FILE = os.path.join(BASE_DIR, 'wireless-attendance-credentials.json')
 
-LOGGING_FILE = 'wireless-attendance.log'
+LOGGING_FILE = os.path.join(BASE_DIR, 'wireless-attendance.log')
 
 LOGGING = {
     'version': 1,

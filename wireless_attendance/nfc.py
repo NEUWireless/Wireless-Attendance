@@ -6,10 +6,17 @@ import busio
 from adafruit_pn532.spi import PN532_SPI
 from digitalio import DigitalInOut
 
+from wireless_attendance import settings
+
 logger = logging.getLogger(__name__)
 
+class BaseHuskyCardReader:
 
-class HuskyCardReader:
+    def read_card(self) -> Optional[str]:
+        raise NotImplemented
+
+
+class HuskyCardReader(BaseHuskyCardReader):
 
     def __init__(self, timeout: timedelta):
         # Delay loading board module until a reader object is constructed
@@ -26,8 +33,8 @@ class HuskyCardReader:
         self.timeout = timeout
         self.card_timeouts = {}
 
-    def read_card(self, timeout: timedelta) -> Optional[str]:
-        uid = self.pn532.read_passive_target(timeout=timeout.seconds)
+    def read_card(self) -> Optional[str]:
+        uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT)
         if uid:
             uid = format_binary(uid)
             logger.debug(f"Found card with UID: {uid}")
@@ -45,6 +52,15 @@ class HuskyCardReader:
 
         self.card_timeouts[uid] = current_time
         return uid
+
+class MockHuskyCardReader(BaseHuskyCardReader):
+
+    def read_card(self) -> Optional[str]:
+        card_uuid = input("Card ID: ")
+        if card_uuid:
+            return card_uuid
+        return None
+
 
 
 def format_binary(byte_array: bytearray):
