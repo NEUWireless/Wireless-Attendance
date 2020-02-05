@@ -56,14 +56,14 @@ class HuskyCardReader(BaseHuskyCardReader):
         uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT)
         if uid:
             uid = format_binary(uid)
-            logger.info(f"Read card with UID: {uid}")
+            logger.info("Read card with UID: {}".format(uid))
 
         current_time = datetime.now()
 
         try:
             last_read = self.card_timeouts[uid]
             if current_time - last_read < self.timeout:
-                logger.debug(f"Card {uid} was read recently! Ignoring most recent read")
+                logger.debug("Card {} was read recently! Ignoring most recent read".format(uid))
                 return None
         except KeyError:
             # Card uuid has not been read before, so we can proceed with

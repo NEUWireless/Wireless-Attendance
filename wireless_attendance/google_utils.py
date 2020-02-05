@@ -18,7 +18,7 @@ GOOGLE_ACCESS_SCOPES = [
     "https://www.googleapis.com/auth/drive"
 ]
 
-_client: gspread.Client = None
+_client = None
 """
 Client instance used to interface with the Google Sheets API.
 """
@@ -34,7 +34,7 @@ def get_google_client(credentials_file):
     global _client
     if not _client:
         # Connecting to google's API
-        logger.info(f"Connecting to Google API using credentials file {credentials_file}")
+        logger.info("Connecting to Google API using credentials file {}".format(credentials_file))
         creds = SACreds.from_json_keyfile_name(credentials_file, GOOGLE_ACCESS_SCOPES)
         _client = gspread.authorize(creds)
 
@@ -66,7 +66,7 @@ class WirelessAttendanceSpreadsheet:
         Add the given ``uuid`` to the user-to-name registry worksheet,
         initializing the name field with the given ``name``.
         """
-        logger.info(f"Registering new UUID for card {uuid} associated with name {name}")
+        logger.info("Registering new UUID for card {} associated with name {}".format(uuid, name))
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
         worksheet_handle.insert_row([uuid, name], 2)
 
@@ -79,7 +79,7 @@ class WirelessAttendanceSpreadsheet:
         user-to-name registry worksheet.
         """
         if uuid not in self.known_uuids:
-            self.write_new_user(uuid, f"Member #{len(self.known_uuids) + 1}")
+            self.write_new_user(uuid, "Member #{}".format(len(self.known_uuids) + 1))
             self.known_uuids.add(uuid)
 
         logger.debug(f"Write access with card {uuid} to sheet")
@@ -112,12 +112,12 @@ class WirelessAttendanceSpreadsheet:
 
             if worksheet_headers[:len(worksheet['columns'])] != worksheet['columns']:
                 logger.warning(
-                    f"Preexisting table found for {worksheet['name']} with improper formatting: Fixing\n"
-                    f"  Expected headers: {worksheet['columns']}\n"
-                    f"  Found headers: {worksheet_headers}"
+                    "Preexisting table found for {} with improper formatting: Fixing\n"
+                    "  Expected headers: {}\n"
+                    "  Found headers: {}".format(worksheet['name'], worksheet['columns'], worksheet_headers)
                 )
                 # TODO: move all data, not just headers
                 worksheet_handle.insert_row(worksheet['columns'], 1)
                 worksheet_handle.delete_row(2)
             else:
-                logger.debug(f"Worksheet {worksheet['name']} is formatted correctly")
+                logger.debug("Worksheet {} is formatted correctly".format(worksheet['name']))
