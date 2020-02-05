@@ -63,13 +63,13 @@ def open_spreadsheet_from_args(google_client: gspread.Client, args):
     command line arguments.
     """
     if args.spreadsheet_id:
-        logger.info(f"Opening spreadsheet by ID '{args.spreadsheet_id}'")
+        logger.info("Opening spreadsheet by ID '{}'".format(args.spreadsheet_id))
         return google_client.open_by_key(args.spreadsheet_id)
     elif args.spreadsheet_url:
-        logger.info(f"Opening spreadsheet by URL '{args.spreadsheet_url}'")
+        logger.info("Opening spreadsheet by URL '{}'".format(args.spreadsheet_url))
         return google_client.open_by_url(args.spreadsheet_url)
     elif args.spreadsheet_name:
-        logger.info(f"Opening spreadsheet by name '{args.spreadsheet_name}'")
+        logger.info("Opening spreadsheet by name '{}'".format(args.spreadsheet_name))
         return google_client.open(args.spreadsheet_name)
     else:
         raise ValueError("Invalid command line arguments - no spreadsheet identifier was provided")
@@ -98,7 +98,7 @@ def main(raw_args):
         logging.debug("Running with Google Sheets API disabled")
 
         def card_callback(card_uuid):
-            logger.info(f"Read card with ID: {card_uuid}")
+            logger.info("Read card with ID: {}".format(card_uuid))
     else:
         logging.debug("Running with live Google Sheet. Attempting Google Sheets API connecting...")
         google_client = google_utils.get_google_client(args.credentials_file)
@@ -111,7 +111,7 @@ def main(raw_args):
             raise
 
         def card_callback(card_uuid):
-            logging.debug(f"Writing access with card '{card_uuid}' to the Google Sheet")
+            logging.debug("Writing access with card '{}' to the Google Sheet".format(card_uuid))
             spreadsheet.write_access_log(card_uuid, datetime.now())
 
     run_attendance_tacking(card_reader, card_callback)
