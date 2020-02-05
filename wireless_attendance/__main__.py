@@ -52,7 +52,12 @@ def make_parser() -> argparse.ArgumentParser:
              "Google Sheets API. All card reads will still be written the the logger."
     )
 
-    parser.add_argument('-mock-reader', action='store_true')
+    parser.add_argument(
+        '-mock-reader',
+        action='store_true',
+        help="If specified, the process will not attempt to access the card reader. "
+             "Mock UUIDs will be read from stdin."
+    )
 
     return parser
 
