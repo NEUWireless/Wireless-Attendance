@@ -82,7 +82,7 @@ class WirelessAttendanceSpreadsheet:
             self.write_new_user(uuid, "Member #{}".format(len(self.known_uuids) + 1))
             self.known_uuids.add(uuid)
 
-        logger.debug(f"Write access with card {uuid} to sheet")
+        logger.debug("Write access with card {} to sheet".format(uuid))
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['access_log']['name'])
         worksheet_handle.insert_row([uuid, time.isoformat()], 2)
 
@@ -100,7 +100,7 @@ class WirelessAttendanceSpreadsheet:
             try:
                 worksheet_handle = self.spreadsheet.worksheet(worksheet['name'])
             except gspread.WorksheetNotFound:
-                logger.info(f"Worksheet '{worksheet['name']}' does not exist. Creating new worksheet.")
+                logger.info("Worksheet '{}' does not exist. Creating new worksheet.".format(worksheet['name']))
                 worksheet_handle = self.spreadsheet.add_worksheet(
                     worksheet['name'],
                     rows=1,
