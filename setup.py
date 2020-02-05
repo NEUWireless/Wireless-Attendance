@@ -44,5 +44,5 @@ setup(
     long_description_content_type='text/x-rst',
     classifiers=CLASSIFIERS,
     install_requires=REQUIREMENTS,
-    python_requires='>=3.6',
+    python_requires='>=3.5',
 )
