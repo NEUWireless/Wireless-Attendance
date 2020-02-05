@@ -53,7 +53,7 @@ class HuskyCardReader(BaseHuskyCardReader):
         `None`. Otherwise, return the card's ID, formatted into a readable
         string.
         """
-        uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT)
+        uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT.seconds)
         if uid:
             uid = format_binary(uid)
             logger.info("Read card with UID: {}".format(uid))
