@@ -6,7 +6,7 @@ A Python package for rapid club meeting attendance via reading Northeastern Univ
 Installing
 ----------
 
-It is recommended that you first create a virtual environment before installing this package and its dependencies. For more information about creating a virtual environment, see the `Python Documentation for the venv module`_. This package supports Python 3.6 or greater.
+It is recommended that you first create a virtual environment before installing this package and its dependencies. For more information about creating a virtual environment, see the `Python Documentation for the venv module`_. This package supports Python 3.5 or greater.
 
 Install the latest and greatest from git by executing
 
