@@ -42,6 +42,8 @@ class HuskyCardReader(BaseHuskyCardReader):
         ic, ver, rev, support = self.pn532.get_firmware_version()
         logger.info('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
 
+        self.pn532.SAM_configuration()
+
         self.timeout = timeout
         self.card_timeouts = {}
 
@@ -53,17 +55,21 @@ class HuskyCardReader(BaseHuskyCardReader):
         `None`. Otherwise, return the card's ID, formatted into a readable
         string.
         """
-        uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT)
-        if uid:
-            uid = format_binary(uid)
-            logger.info(f"Read card with UID: {uid}")
+        uid = self.pn532.read_passive_target(timeout=settings.CARD_READER_READ_TIMEOUT.seconds)
+
+        if not uid:
+            return None
+
+        uid = format_binary(uid)
+        logger.info("Read card with UID: {}".format(uid))
 
         current_time = datetime.now()
 
+        # Check if the card was read too recently
         try:
             last_read = self.card_timeouts[uid]
             if current_time - last_read < self.timeout:
-                logger.debug(f"Card {uid} was read recently! Ignoring most recent read")
+                logger.debug("Card {} was read recently! Ignoring most recent read".format(uid))
                 return None
         except KeyError:
             # Card uuid has not been read before, so we can proceed with
