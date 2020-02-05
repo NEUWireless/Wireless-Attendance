@@ -42,6 +42,8 @@ class HuskyCardReader(BaseHuskyCardReader):
         ic, ver, rev, support = self.pn532.get_firmware_version()
         logger.info('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
 
+        self.pn532.SAM_configuration()
+
         self.timeout = timeout
         self.card_timeouts = {}
 
