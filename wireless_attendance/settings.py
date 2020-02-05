@@ -53,21 +53,10 @@ The default location to search for the google credentials file if no credentials
 file is specified via the command line.
 """
 
-LOGGING_FILE = os.path.join(BASE_DIR, 'wireless-attendance.log')
-"""
-The path to the log file used by this package.
-"""
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'default_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': LOGGING_FILE,
-            'formatter': 'default',
-        },
         'default_stderr': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -84,7 +73,7 @@ LOGGING = {
     'loggers': {
         '': { # root logger
             'level': 'DEBUG',
-            'handlers': ['default_file', 'default_stderr'],
+            'handlers': ['default_stderr'],
             'propagate': False,
         },
     },
