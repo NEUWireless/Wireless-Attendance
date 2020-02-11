@@ -87,7 +87,7 @@ def run_attendance_tacking(card_reader: nfc.BaseHuskyCardReader, card_callback):
         uid = card_reader.read_card()
         if uid:
             card_callback(uid)
-        time.sleep(delay.microseconds / 1e6)
+        time.sleep(delay.total_seconds())
 
 
 def main(raw_args):

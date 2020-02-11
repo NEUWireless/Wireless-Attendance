@@ -39,6 +39,8 @@ CARD_READER_READ_TIMEOUT = timedelta(seconds=1)
 """
 The duration of time for which the card reader will search for a card before
 concluding that no card was found.
+
+This value will be truncated to the nearest second.
 """
 
 CARD_READER_DELAY = timedelta(seconds=0.5)
