@@ -37,7 +37,7 @@ class HuskyCardReader(BaseHuskyCardReader):
 
         spi = busio.SPI(board.SCLK, board.MOSI, board.MISO)
         cs_pin = DigitalInOut(board.D5)
-        self.pn532 = PN532_SPI(spi, cs_pin, debug=True)
+        self.pn532 = PN532_SPI(spi, cs_pin, debug=False)
 
         ic, ver, rev, support = self.pn532.get_firmware_version()
         logger.info('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
