@@ -29,7 +29,7 @@ CLASSIFIERS = [
 
 setup(
     name='wireless_attendance',
-    version='0.1.0',
+    version='0.3.1',
     include_package_data=True,
     packages=find_packages(),
     license='MIT',
