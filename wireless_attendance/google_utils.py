@@ -68,7 +68,7 @@ class WirelessAttendanceSpreadsheet:
         """
         logger.info("Registering new UUID for card {} associated with name {}".format(uuid, name))
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['name_registry']['name'])
-        worksheet_handle.insert_row([uuid, name], 2)
+        worksheet_handle.append_row([uuid, name], 2)
 
     def write_access_log(self, uuid: str, time: datetime):
         """
@@ -84,7 +84,7 @@ class WirelessAttendanceSpreadsheet:
 
         logger.debug("Write access with card {} to sheet".format(uuid))
         worksheet_handle = self.spreadsheet.worksheet(settings.WORKSHEETS['access_log']['name'])
-        worksheet_handle.insert_row([uuid, time.isoformat()], 2)
+        worksheet_handle.append_row([uuid, time.isoformat()], 2)
 
     def write_statistics_sheet(self):
         ...  # TODO
@@ -117,7 +117,7 @@ class WirelessAttendanceSpreadsheet:
                     "  Found headers: {}".format(worksheet['name'], worksheet['columns'], worksheet_headers)
                 )
                 # TODO: move all data, not just headers
-                worksheet_handle.insert_row(worksheet['columns'], 1)
-                worksheet_handle.delete_row(2)
+                worksheet_handle.append_row(worksheet['columns'], 1)
+                worksheet_handle.delete_row(1)
             else:
                 logger.debug("Worksheet {} is formatted correctly".format(worksheet['name']))

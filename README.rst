@@ -47,6 +47,36 @@ If all goes well, you should be prompt to enter mock card IDs. Enter a few value
 Running
 -------
 
+.. code-block:: shell
+
+    $ python3 -m wireless_attendance --help
+    usage: wireless_attendance [-h] [--credentials-file CREDENTIALS_FILE]
+                               (--spreadsheet-id SPREADSHEET_ID | --spreadsheet-name SPREADSHEET_NAME | --spreadsheet-url SPREADSHEET_URL | -no-sheet)
+                               [-mock-reader]
+
+    Wireless Attendance Tracking
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --credentials-file CREDENTIALS_FILE
+                            The path to the Google Service Account credentials.
+                            See the gspread documentation for information on how
+                            to obtain a credentials file:
+                            https://gspread.readthedocs.io/en/latest/oauth2.html
+      --spreadsheet-id SPREADSHEET_ID
+                            The ID of the spreadsheet to store attendance data.
+      --spreadsheet-name SPREADSHEET_NAME
+                            The name of the spreadsheet to store attendance data.
+      --spreadsheet-url SPREADSHEET_URL
+                            The complete URL to the spreadsheet to store
+                            attendance data.
+      -no-sheet             If specified, the process will not attempt to connect
+                            to the Google Sheets API. All card reads will still be
+                            written the the logger.
+      -mock-reader          If specified, the process will not attempt to access
+                            the card reader. Mock UUIDs will be read from stdin.
+
+
 License
 -------
 
