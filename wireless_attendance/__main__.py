@@ -84,7 +84,9 @@ def run_attendance_tacking(card_reader: nfc.BaseHuskyCardReader, card_callback):
     """Run the read-card write-id procedure indefinitely."""
     delay = settings.CARD_READER_DELAY
     while True:
-        card_callback(card_reader.read_card())
+        uid = card_reader.read_card()
+        if uid:
+            card_callback(uid)
         time.sleep(delay.microseconds / 1e6)
 
 
